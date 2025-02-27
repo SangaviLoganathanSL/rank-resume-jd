@@ -1,0 +1,142 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Resume Ranking API",
+    "version": "1.0",
+    "description": "API for extracting job criteria and scoring resumes"
+  },
+  "paths": {
+    "/extract-criteria": {
+      "post": {
+        "summary": "Extract criteria from job description",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Job description document (PDF or DOCX)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "criteria": {
+                  "type": "object",
+                  "properties": {
+                    "skills": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["Python", "Java", "AWS"]
+                    },
+                    "certifications": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["AWS Certified Developer", "PMP"]
+                    },
+                    "experience": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["5+ years software development", "3+ years cloud computing"]
+                    },
+                    "technical_stack": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["Docker", "Kubernetes", "MongoDB"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No file part"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/score-resumes": {
+      "post": {
+        "summary": "Score resumes against criteria",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+        "parameters": [
+          {
+            "name": "criteria",
+            "in": "formData",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi",
+            "required": true,
+            "description": "List of criteria to score against"
+          },
+          {
+            "name": "files",
+            "in": "formData",
+            "type": "array",
+            "items": {
+              "type": "file"
+            },
+            "collectionFormat": "multi",
+            "required": true,
+            "description": "Resume files to score (PDF or DOCX)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Excel file containing resume scores",
+            "schema": {
+              "type": "file"
+            },
+            "headers": {
+              "Content-Type": {
+                "type": "string",
+                "description": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              },
+              "Content-Disposition": {
+                "type": "string",
+                "description": "attachment; filename=resume_scores.xlsx"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Missing criteria or files"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
