@@ -4,4 +4,4 @@ node_modules/
 rank_env
 logs/
 .env
-resume_Scores.xlsx
+uploads/resume_Scores.xlsx
